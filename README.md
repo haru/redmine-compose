@@ -1,5 +1,7 @@
 # Redmine Compose
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A simple Docker Compose setup to quickly deploy Redmine with PostgreSQL.
 
 ## Features
@@ -21,7 +23,7 @@ A simple Docker Compose setup to quickly deploy Redmine with PostgreSQL.
 1. **Clone this repository**
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/haru/redmine-compose.git
    cd redmine
    ```
 
@@ -122,6 +124,15 @@ git clone <theme-repository-url>
 
 After adding a theme, go to **Administration → Settings → Display** in Redmine to select it.
 
+> ⚠️ **For Redmine < 6.0:** The themes directory location is different. You need to change the mount point in `docker-compose.yml`:
+>
+> ```yaml
+> # Change this line:
+> - ./themes:/usr/src/redmine/themes
+> # To:
+> - ./themes:/usr/src/redmine/public/themes
+> ```
+
 ## Common Commands
 
 ```bash
@@ -162,29 +173,33 @@ All data is stored in this directory. Simply back up the entire project folder t
 tar -czvf redmine-backup-$(date +%Y%m%d).tar.gz .
 ```
 
-## Troubleshooting
+## Upgrading Redmine
 
-### Plugin migration issues
+> ⚠️ Always back up your data before upgrading.
 
-If you encounter plugin migration errors, try:
-
-```bash
-docker compose exec redmine bundle exec rake redmine:plugins:migrate RAILS_ENV=production
-```
-
-### Database connection issues
-
-Ensure the database container is running:
+### If using `REDMINE_VERSION=latest`
 
 ```bash
-docker compose ps
+docker compose pull
+docker compose down
+docker compose up -d
 ```
 
-Check database logs:
+### If using a specific version (e.g., `REDMINE_VERSION=6.0`)
 
-```bash
-docker compose logs db
-```
+1. Edit `.env` and update the version:
+
+   ```env
+   REDMINE_VERSION=6.1
+   ```
+
+2. Pull the new image and restart:
+
+   ```bash
+   docker compose pull
+   docker compose down
+   docker compose up -d
+   ```
 
 ## License
 
