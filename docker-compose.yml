@@ -1,0 +1,31 @@
+services:
+  redmine:
+    image: redmine:${REDMINE_VERSION:-latest}
+    restart: unless-stopped
+    ports:
+      - "${REDMINE_PORT:-3000}:3000"
+    environment:
+      REDMINE_DB_POSTGRES: db
+      REDMINE_DB_USERNAME: ${DB_USER:-redmine}
+      REDMINE_DB_PASSWORD: ${DB_PASSWORD:-password}
+      REDMINE_DB_DATABASE: ${DB_NAME:-redmine}
+      REDMINE_SECRET_KEY_BASE: ${REDMINE_SECRET_KEY_BASE:-YOUR_SECRET_KEY_BASE}
+      REDMINE_PLUGINS_MIGRATE: 1
+    volumes:
+      - ./files:/usr/src/redmine/files
+      - ./plugins:/usr/src/redmine/plugins
+      - ./themes:/usr/src/redmine/themes
+      # - ./configuration.yml:/usr/src/redmine/config/configuration.yml
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-redmine}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_DB: ${DB_NAME:-redmine}
+    volumes:
+      - ./db_data:/var/lib/postgresql/data
+

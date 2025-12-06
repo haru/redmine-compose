@@ -1,0 +1,5 @@
+files/
+plugins/
+themes/
+db_data/
+.env
